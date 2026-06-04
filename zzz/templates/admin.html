@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель администратора</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        .admin-form { padding: 25px; border-radius: 8px; margin-bottom: 40px; }
+        [data-theme="light"] .admin-form { background: #fff3e0; border: 1px solid #ffe0b2; }
+        [data-theme="dark"] .admin-form { background: #231a11; border: 1px solid #4e3419; }
+        .flash-messages { background: #e8f5e9; padding: 10px; border-radius: 5px; margin-bottom: 20px; color: #1b5e20;}
+    </style>
+</head>
+<body>
+    <main class="container">
+        <header style="margin-top: 20px;">
+            <a href="/" class="button secondary" style="float: right;">← На главную</a>
+            <h2>⚙️ Панель администратора (franfri)</h2>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <div>{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <section class="admin-form">
+            <h3>+ Добавить новый рейс</h3>
+            <form method="POST">
+                <div class="grid">
+                    <label for="train_number">№ Поезда:
+                        <input type="text" id="train_number" name="train_number" placeholder="6512" required>
+                    </label>
+                    <label for="station_from">Отправление:
+                        <input type="text" id="station_from" name="station_from" placeholder="Владимир" required>
+                    </label>
+                    <label for="station_to">Прибытие:
+                        <input type="text" id="station_to" name="station_to" placeholder="Москва" required>
+                    </label>
+                </div>
+                <div class="grid">
+                    <label for="departure_time">Время отпр.:
+                        <input type="text" id="departure_time" name="departure_time" placeholder="14:20" required>
+                    </label>
+                    <label for="arrival_time">Время приб.:
+                        <input type="text" id="arrival_time" name="arrival_time" placeholder="17:35" required>
+                    </label>
+                    <label for="duration">В пути:
+                        <input type="text" id="duration" name="duration" placeholder="3ч 15м" required>
+                    </label>
+                    <label for="price">Цена (руб):
+                        <input type="number" id="price" name="price" placeholder="550" required>
+                    </label>
+                </div>
+                <button type="submit" class="warning">Сохранить рейс</button>
+            </form>
+        </section>
+
+        <section>
+            <h3>Текущая база данных расписания</h3>
+            <figure>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>№ Поезда</th>
+                            <th>Маршрут</th>
+                            <th>Отправление</th>
+                            <th>Прибытие</th>
+                            <th>Цена</th>
+                            <th>Удаление</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for route in routes %}
+                        <tr>
+                            <td><strong>{{ route.train_number }}</strong></td>
+                            <td>{{ route.station_from }} → {{ route.station_to }}</td>
+                            <td>{{ route.departure_time }}</td>
+                            <td>{{ route.arrival_time }}</td>
+                            <td>{{ route.price }} ₽</td>
+                            <td>
+                                <a href="/admin/delete/{{ route.id }}" style="color: #c62828;" onclick="return confirm('Удалить этот рейс?')">❌ Удалить</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </figure>
+        </section>
+    </main>
+    <script>
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+    </script>
+</body>
+</html>

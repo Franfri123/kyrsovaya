@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание электричек</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body { padding-top: 10px; }
+        .search-box { padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        [data-theme="light"] .search-box { background: #f8f9fa; }
+        [data-theme="dark"] .search-box { background: #1a2332; }
+        .nav-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .flash-messages { background: #e3f2fd; padding: 10px; border-radius: 5px; margin-bottom: 20px; color: #0d47a1;}
+        [data-theme="dark"] .flash-messages { background: #0d47a1; color: #fff; }
+        .theme-toggle { cursor: pointer; font-size: 1.2rem; user-select: none; }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <nav class="nav-container">
+            <ul>
+                <li><strong>🚊 TrainScheduler</strong></li>
+            </ul>
+            <ul>
+                <li><span id="theme-btn" class="theme-toggle" title="Сменить тему">🌓</span></li>
+                {% if current_user %}
+                    <li>Здравствуйте, <strong>{{ current_user }}</strong></li>
+                    {% if current_user == 'franfri' %}
+                        <li><a href="/admin" class="button contrast" style="padding: 5px 10px; margin-right: 10px;">Админка</a></li>
+                    {% endif %}
+                    <li><a href="/logout" class="button secondary" style="padding: 5px 10px;">Выйти</a></li>
+                {% else %}
+                    <li><a href="/login">Войти</a></li>
+                    <li><a href="/register" class="button">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for message in messages %}
+                <div>{{ message }}</div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <section class="search-box">
+            <form method="POST">
+                <div class="grid">
+                    <label for="station_from">Откуда:
+                        <input type="text" id="station_from" name="station_from" placeholder="Например: Москва" value="{{ search_from }}">
+                    </label>
+                    <label for="station_to">Куда:
+                        <input type="text" id="station_to" name="station_to" placeholder="Например: Сергиев Посад" value="{{ search_to }}">
+                    </label>
+                </div>
+                <div style="text-align: right;">
+                    <button type="submit" class="contrast">Найти рейсы</button>
+                    <a href="/" class="button secondary" style="margin-left: 10px;">Сбросить</a>
+                </div>
+            </form>
+        </section>
+
+        <section>
+            {% if routes %}
+                <figure>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">№ Поезда</th>
+                                <th scope="col">Маршрут</th>
+                                <th scope="col">Отправление</th>
+                                <th scope="col">Прибытие</th>
+                                <th scope="col">В пути</th>
+                                <th scope="col">Цена билета</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for route in routes %}
+                            <tr>
+                                <td><strong>{{ route.train_number }}</strong></td>
+                                <td>{{ route.station_from }} → {{ route.station_to }}</td>
+                                <td><mark>{{ route.departure_time }}</mark></td>
+                                <td>{{ route.arrival_time }}</td>
+                                <td><small>{{ route.duration }}</small></td>
+                                <td>{{ route.price }} ₽</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </figure>
+            {% else %}
+                <div style="text-align: center; padding: 40px;">
+                    <blockquote>Рейсов по заданному направлению не найдено.</blockquote>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <script>
+        const themeBtn = document.getElementById('theme-btn');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>

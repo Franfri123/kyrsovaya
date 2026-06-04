@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в систему</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container" style="max-width: 500px; margin-top: 50px;">
+        <article>
+            <h2>Вход в личный кабинет</h2>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div style="color: #c62828; margin-bottom: 15px;">
+                  {% for message in messages %} <p>{{ message }}</p> {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            <form method="POST">
+                <label for="username">Логин:
+                    <input type="text" id="username" name="username" required>
+                </label>
+                <label for="password">Пароль:
+                    <input type="password" id="password" name="password" required>
+                </label>
+                <button type="submit" class="contrast">Войти</button>
+            </form>
+            <p style="text-align: center;"><a href="/register">Регистрация</a> | <a href="/">На главную</a></p>
+        </article>
+    </main>
+    <script>
+        document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+    </script>
+</body>
+</html>
