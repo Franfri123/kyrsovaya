@@ -1,2 +1,3 @@
 # kyrsovaya
-123123123
+pip install Flask Flask-SQLAlchemy
+имя бд:train_schedule_db
